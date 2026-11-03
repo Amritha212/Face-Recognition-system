@@ -143,3 +143,17 @@ GitHub: [Amritha212](https://github.com/Amritha212)
 ---
 
 *This project was developed for learning and practical exploration of deep learning-based face recognition and verification.*
+## Dashboard Screenshots
+
+### 1. Project Dashboard
+![Dashboard](screenshots/Project_dashboard.png)
+
+### 2. Dataset Analytics
+![Dataset Analytics](screenshots/Data_analytics.png)
+
+### 3. Model Evaluation
+![Model Evaluation](screenshots/Model&Evaluation.png)
+![Model Evaluation - Additional Results](screenshots/Model&Evaluation2.png)
+
+### 4. Workflow and Results
+![Workflow Results](screenshots/Workflow&Result.png)
