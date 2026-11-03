@@ -1,127 +1,145 @@
+# Face Recognition and Verification System
 
-# Face Recognition System Using FaceNet
+A Python-based Face Recognition and Verification System developed using FaceNet, MTCNN, PyTorch, OpenCV, and Flask.
+
+This project explores face detection, feature extraction, identity classification, and face verification through pretrained and partially fine-tuned deep learning models.
 
 ## Project Overview
 
-This project evaluates a pre-trained FaceNet model and a partially fine-tuned FaceNet model for face recognition and verification. It uses MTCNN for face detection, FaceNet embeddings, and cosine similarity for comparing face images.
+The system uses deep learning techniques to detect and recognize faces, extract facial embeddings, and compare facial similarities. It also includes a Flask dashboard to present model evaluation results and visualizations.
 
-The project also includes a Flask dashboard for displaying dataset analytics and project results.
+## Key Features
 
-## Main Features
+- Face detection using MTCNN.
+- Facial feature extraction using FaceNet.
+- Face recognition and identity classification.
+- Face verification using facial similarity scores.
+- Pretrained and partially fine-tuned model comparison.
+- Dataset quality and duplicate analysis.
+- Evaluation using ROC-AUC and Average Precision.
+- Interactive Flask dashboard for displaying results.
 
-- Dataset organization and split analysis
-- Face detection and embedding extraction
-- Pre-trained FaceNet baseline evaluation
-- Partial fine-tuning on training images
-- Cosine-similarity verification
-- ROC and precision-recall evaluation
-- Similarity distribution plots
-- Flask-based project dashboard
+## Technologies Used
 
-## Technologies
+| Category | Technologies |
+|---|---|
+| Programming Language | Python |
+| Deep Learning | PyTorch |
+| Face Detection | MTCNN |
+| Face Recognition | FaceNet |
+| Image Processing | OpenCV |
+| Machine Learning | Scikit-learn |
+| Backend | Flask |
+| Frontend | HTML, CSS, JavaScript |
+| Data Analysis | Pandas, Matplotlib |
 
-- Python 3.10
-- PyTorch
-- facenet-pytorch
-- MTCNN
-- OpenCV
-- pandas
-- scikit-learn
-- Matplotlib
-- Flask
+## Model Evaluation
+
+The project compares pretrained FaceNet with a partially fine-tuned FaceNet model.
+
+| Evaluation Metric | Pretrained FaceNet | Fine-tuned FaceNet |
+|---|---:|---:|
+| ROC-AUC | 0.9808 | 0.9617 |
+| Average Precision | 0.9582 | 0.9010 |
+
+**Observation:** The pretrained FaceNet model achieved better verification performance than the partially fine-tuned model in this evaluation.
 
 ## Project Structure
 
 ```text
-Face_Recognition_project/
+Face-Recognition-system/
+│
 ├── app.py
 ├── README.md
-├── dataset/
-├── models/
-├── report/
-│   ├── figures/
-│   └── JEZT_Face_Recognition_Report.pdf
-├── results/
+├── requirements.txt
+│
 ├── src/
+│   ├── baseline_evaluation.py
+│   ├── compare_verification_models.py
+│   ├── finetune_facenet.py
+│   ├── train_identity_classifier.py
+│   └── evaluate_identity_classifier.py
+│
+├── results/
+│   ├── baseline_metrics.csv
+│   ├── pre_post_comparison.csv
+│   └── evaluation visualizations
+│
+├── report/
+│   └── figures/
+│
 ├── static/
-├── templates/
-└── venv/
+│   ├── style.css
+│   └── results/
+│
+└── templates/
+    └── index.html
 ```
 
-## Setup
+## Installation and Setup
 
-Open PowerShell in the project directory.
+### 1. Clone the repository
 
-Install the dependencies used by the project:
+```bash
+git clone https://github.com/Amritha212/Face-Recognition-system.git
+```
+
+### 2. Open the project folder
+
+```bash
+cd Face-Recognition-system
+```
+
+### 3. Create a virtual environment
+
+```bash
+python -m venv venv
+```
+
+### 4. Activate the environment (Windows)
 
 ```powershell
-.\venv\Scripts\python.exe -m pip install torch facenet-pytorch pandas scikit-learn matplotlib flask pillow reportlab
+.\venv\Scripts\Activate.ps1
 ```
 
-## Run the Dashboard
+### 5. Install dependencies
 
-```powershell
-.\venv\Scripts\python.exe app.py
+```bash
+python -m pip install -r requirements.txt
 ```
 
-Open the local URL printed in the terminal, usually:
+### 6. Run the Flask application
 
-`http://127.0.0.1:5000`
-
-## Run Experiments
-
-Run these commands from the project root.
-
-Baseline evaluation:
-
-```powershell
-.\venv\Scripts\python.exe src\baseline_evaluation.py
+```bash
+python app.py
 ```
 
-Partial fine-tuning:
+Open your browser and visit:
 
-```powershell
-.\venv\Scripts\python.exe src\finetune_facenet.py
+```text
+http://127.0.0.1:5000
 ```
 
-Pre-trained versus fine-tuned verification comparison:
+## Dataset and Model Files
 
-```powershell
-.\venv\Scripts\python.exe src\compare_verification_models.py
-```
+The original face dataset and trained model checkpoint files are not included in this public repository.
 
-Generate baseline verification plots:
+To run the complete training and evaluation workflows, provide an authorized dataset and the required model files separately.
 
-```powershell
-.\venv\Scripts\python.exe src\analyze_baseline_verification.py
-```
+## Project Highlights
 
-## Experimental Results
+- Implemented a face recognition and verification workflow.
+- Evaluated pretrained and partially fine-tuned FaceNet models.
+- Performed dataset quality checks and duplicate analysis.
+- Developed a Flask-based evaluation dashboard.
+- Analyzed model performance using verification metrics and visualizations.
 
-The high-quality verification experiment evaluated 236 images with valid embeddings from both models.
+## Author
 
-| Metric | Pre-trained FaceNet | Fine-tuned FaceNet |
-|---|---:|---:|
-| ROC-AUC | 0.980838 | 0.961675 |
-| Average precision | 0.958213 | 0.900969 |
-| Pair comparisons | 27,730 | 27,730 |
+**Amritha P**
 
-In this experiment, the pre-trained model performed better on both verification metrics. Fine-tuning did not improve the measured results.
+GitHub: [Amritha212](https://github.com/Amritha212)
 
-These results are preliminary and apply to the selected high-quality evaluation subset. They do not establish performance on low-quality images or unseen identities.
+---
 
-## Important Limitations
-
-- Four selected evaluation images failed face detection.
-- Cross-quality near-duplicate leakage has not been fully ruled out.
-- Pairwise comparisons share images and are not statistically independent.
-- The exploratory baseline uses a different, smaller sample.
-- Results should not be interpreted as proof of production readiness.
-
-## Privacy and Responsible Use
-
-Keep the supplied dataset private and local. Do not redistribute dataset images or use them for purposes outside the dataset provider's instructions. Face recognition results should not be treated as definitive identity verification in consequential settings.
-
-## Report
-
-See `report/JEZT_Face_Recognition_Report.pdf` for the methodology, results, figures, limitations, and evaluation-set declaration.
+*This project was developed for learning and practical exploration of deep learning-based face recognition and verification.*
