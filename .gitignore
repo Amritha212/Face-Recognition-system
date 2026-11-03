@@ -1,0 +1,17 @@
+__pycache__/
+*.py[cod]
+venv/
+.venv/
+dataset/original/
+models/*.pt
+models/*.pth
+results/pre_post_verification_pair_scores.csv
+.env
+.vscode/
+# Private dataset analysis files
+results/*duplicate*
+results/*split*.csv
+results/*predictions*.csv
+results/*label_map*.json
+results/*embedding_status.csv
+report/JEZT_Face_Recognition_Report.pdf

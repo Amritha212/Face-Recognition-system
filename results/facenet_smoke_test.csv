@@ -1,0 +1,17 @@
+identity,image,status,embedding_dimensions,embedding_norm
+ananthu,Ananthu_frame0713.jpg,Success,512.0,0.9999999403953552
+ananthu,Ananthu_frame0714.jpg,Success,512.0,1.0
+Firoz,frame646_face647.jpg,Success,512.0,0.9999999403953552
+Firoz,frame647_face648.jpg,Success,512.0,1.0
+mujeeb,frame456_face457.jpg,Success,512.0,0.9999999403953552
+mujeeb,frame457_face458.jpg,Success,512.0,0.9999999403953552
+Ruvais,frame78_face79.jpg,Success,512.0,1.0
+Ruvais,frame79_face80.jpg,Success,512.0,0.9999999403953552
+sebin,Sebin_frame0336.jpg,Success,512.0,1.0
+sebin,Sebin_frame0337.jpg,Success,512.0,1.0
+shinjil,Shinjil_frame0219.jpg,No face detected,,
+shinjil,Shinjil_frame0220.jpg,Success,512.0,1.0
+suresh,Suresh_frame0671.jpg,Success,512.0,1.0
+suresh,Suresh_frame0672.jpg,Success,512.0,1.0
+thomas,Thomas_frame0454.jpg,Success,512.0,1.0
+thomas,Thomas_frame0455.jpg,Success,512.0,0.9999999403953552

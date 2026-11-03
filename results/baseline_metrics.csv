@@ -1,0 +1,2 @@
+sample_images,valid_embeddings,failed_embeddings,pair_count,same_person_pairs,different_person_pairs,roc_auc,average_precision,exploratory_threshold,sample_accuracy_at_exploratory_threshold,true_positives,false_positives,true_negatives,false_negatives
+80,27,53,351,43,308,0.7869223799456357,0.71118164875251,0.7845491170883179,0.9544159544159544,27,0,308,16

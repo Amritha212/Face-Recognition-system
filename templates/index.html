@@ -1,0 +1,297 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FaceAI | Face Recognition System</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+<div class="app-shell">
+  <aside class="sidebar">
+    <a class="brand" href="#dashboard"><span class="brand-icon">◎</span><span><b>FaceAI</b><small>Face Recognition System</small></span></a>
+    <nav class="nav-list" aria-label="Main navigation">
+      <a class="nav-link active" href="#dashboard"><span>▦</span>Dashboard</a>
+      <a class="nav-link" href="#analytics"><span>◫</span>Dataset Analytics</a>
+      <a class="nav-link" href="#evaluation"><span>⌁</span>Model &amp; Evaluation</a>
+      <a class="nav-link" href="#workflow"><span>✓</span>Workflow &amp; Results</a>
+    </nav>
+   
+  </aside>
+
+  <main class="main-content">
+    <header class="topbar">
+      <div><div class="eyebrow">COMPUTER VISION / PROJECT WORKSPACE</div><h1>Face Recognition System</h1><p class="subtitle">Dataset insights, model evaluation, and experiment tracking</p></div>
+      
+    </header>
+
+    {% if not data.ready %}
+      <section class="notice error"><b>Dataset metadata not loaded</b><p>{{ data.error }}</p><p>Place <code>dataset_split_clean.csv</code> or <code>dataset_split.csv</code> inside the project's <code>results</code> folder.</p></section>
+    {% else %}
+    <section id="dashboard" class="section-anchor">
+      <div class="section-heading"><div><div class="eyebrow">OVERVIEW</div><h2>Project dashboard</h2></div><span class="live-pill"><span class="status-dot"></span> Data loaded from local CSV</span></div>
+      <div class="kpi-grid">
+        <article class="kpi-card blue"><div class="kpi-top"><span>Total images</span><span class="kpi-icon">▧</span></div><div class="kpi-value">{{ '{:,}'.format(data.total) }}</div><div class="kpi-note">Across {{ data.identity_total }} identities</div></article>
+        <article class="kpi-card teal"><div class="kpi-top"><span>Identities</span><span class="kpi-icon">♙</span></div><div class="kpi-value">{{ data.identity_total }}</div><div class="kpi-note">Unique identity labels</div></article>
+        <article class="kpi-card violet"><div class="kpi-top"><span>Training images</span><span class="kpi-icon">◈</span></div><div class="kpi-value">{{ '{:,}'.format(data.train_count) }}</div><div class="kpi-note">Training subset in metadata</div></article>
+        <article class="kpi-card orange"><div class="kpi-top"><span>Evaluation images</span><span class="kpi-icon">▤</span></div><div class="kpi-value">{{ '{:,}'.format(data.eval_count) }}</div><div class="kpi-note">Held-out subset in metadata</div></article>
+      </div>
+
+      <div class="content-grid overview-grid">
+        <section class="panel dataset-panel">
+          <div class="panel-title"><div class="panel-symbol">▤</div><div><h3>Dataset overview</h3><p>Local dataset metadata and validation</p></div></div>
+          <div class="detail-row"><span>Dataset folder</span><code>{{ data.dataset_path }}</code></div>
+          <div class="detail-row"><span>Metadata source</span><code>{{ data.csv_name }}</code></div>
+          <div class="detail-row"><span>Missing image files</span><strong class="{{ 'good' if data.missing_paths == 0 else 'warn' }}">{{ data.missing_paths }}</strong></div>
+          <div class="detail-row"><span>Quality categories</span><div class="chip-row">{% for item in data.quality %}<span class="chip">{{ item.name }} · {{ item.count }}</span>{% endfor %}</div></div>
+          <div class="detail-row"><span>Duplicate audit</span><strong class="warn">{{ data.duplicate_status }}</strong></div>
+          <div class="callout">Dataset counts are read from your existing CSV. Near-duplicate review is still required before treating the evaluation set as leakage-free.</div>
+        </section>
+        <section class="panel chart-panel">
+          <div class="panel-title"><div class="panel-symbol">▥</div><div><h3>Images by identity</h3><p>Image count for each identity label</p></div></div>
+          <div class="chart-wrap"><canvas id="identityChart" aria-label="Images by identity chart"></canvas></div>
+        </section>
+      </div>
+    </section>
+
+    <section id="analytics" class="section-anchor">
+      <div class="section-heading"><div><div class="eyebrow">SECTION 02</div><h2>Dataset analytics</h2></div><span class="section-tag">Computed from metadata</span></div>
+      <div class="content-grid analytics-grid">
+        <section class="panel"><div class="panel-title"><div class="panel-symbol">◔</div><div><h3>Image quality distribution</h3><p>High-quality and low-quality categories</p></div></div><div class="chart-wrap doughnut-wrap"><canvas id="qualityChart"></canvas></div><div id="qualityLegend" class="legend-list"></div></section>
+        <section class="panel"><div class="panel-title"><div class="panel-symbol">◉</div><div><h3>Training vs evaluation</h3><p>Split recorded in the CSV</p></div></div><div class="chart-wrap doughnut-wrap"><canvas id="splitChart"></canvas></div><div class="split-summary"><div><span class="legend-dot green"></span><span>Training</span><b>{{ '{:,}'.format(data.train_count) }}</b></div><div><span class="legend-dot purple"></span><span>Evaluation</span><b>{{ '{:,}'.format(data.eval_count) }}</b></div></div></section>
+      </div>
+      <section class="panel table-panel"><div class="panel-title"><div class="panel-symbol">☷</div><div><h3>Identity breakdown</h3><p>All identity labels and their image counts</p></div></div><div class="table-scroll"><table><thead><tr><th>Identity</th><th>Images</th><th>Share of dataset</th><th>Distribution</th></tr></thead><tbody>{% for item in data.identities %}<tr><td><span class="identity-dot">{{ item.name[:1]|upper }}</span>{{ item.name }}</td><td>{{ '{:,}'.format(item.count) }}</td><td>{{ '%.1f'|format((item.count / data.total * 100) if data.total else 0) }}%</td><td><div class="bar-track"><span style="width: {{ (item.count / data.total * 100) if data.total else 0 }}%"></span></div></td></tr>{% endfor %}</tbody></table></div></section>
+    </section>
+
+    
+<section id="evaluation" class="section-anchor">
+  <div class="section-heading">
+    <div>
+      <div class="eyebrow">SECTION 03</div>
+      <h2>Model &amp; evaluation</h2>
+    </div>
+    <span class="section-tag">Results loaded from CSV</span>
+  </div>
+
+  {% set results = data.model_results %}
+  {% set pre = namespace(item=none) %}
+  {% set fine = namespace(item=none) %}
+
+  {% for result in results %}
+    {% if result.model == 'pretrained' %}
+      {% set pre.item = result %}
+    {% elif result.model == 'finetuned' %}
+      {% set fine.item = result %}
+    {% endif %}
+  {% endfor %}
+
+  <div class="content-grid evaluation-grid">
+    <section class="panel model-card">
+      <div class="panel-title">
+        <div class="panel-symbol">AI</div>
+        <div>
+          <h3>Recognition model</h3>
+          <p>FaceNet InceptionResnetV1 with VGGFace2 weights</p>
+        </div>
+      </div>
+
+      <div class="model-placeholder">
+        <h4>Pre-trained and partially fine-tuned FaceNet</h4>
+        <p>MTCNN face detection, normalized face embeddings, and cosine-similarity verification.</p>
+        <span class="pill success">Evaluation results available</span>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-title">
+        <div class="panel-symbol">⌁</div>
+        <div>
+          <h3>Pre-trained model metrics</h3>
+          <p>Verification experiment</p>
+        </div>
+      </div>
+
+      {% if pre.item %}
+      <div class="metric-grid">
+        <div class="metric-box">
+          <span>ROC-AUC</span>
+          <b>{{ '%.4f'|format(pre.item.roc_auc) }}</b>
+          <small>Verification</small>
+        </div>
+        <div class="metric-box">
+          <span>Average precision</span>
+          <b>{{ '%.4f'|format(pre.item.average_precision) }}</b>
+          <small>Precision-recall</small>
+        </div>
+        <div class="metric-box">
+          <span>Valid images</span>
+          <b>{{ pre.item.valid_images }}</b>
+          <small>Successfully embedded</small>
+        </div>
+        <div class="metric-box">
+          <span>Pair comparisons</span>
+          <b>{{ '{:,}'.format(pre.item.pair_count) }}</b>
+          <small>Same evaluation sample</small>
+        </div>
+      </div>
+      {% else %}
+        <p>Pre-trained model results are unavailable.</p>
+      {% endif %}
+    </section>
+  </div>
+
+  <section class="panel">
+    <div class="panel-title">
+      <div class="panel-symbol">↗</div>
+      <div>
+        <h3>Pre-trained vs fine-tuned verification</h3>
+        <p>Measured results from the saved experiment summary</p>
+      </div>
+    </div>
+
+    {% if pre.item and fine.item %}
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>Metric</th>
+            <th>Pre-trained FaceNet</th>
+            <th>Fine-tuned FaceNet</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>ROC-AUC</td>
+            <td>{{ '%.4f'|format(pre.item.roc_auc) }}</td>
+            <td>{{ '%.4f'|format(fine.item.roc_auc) }}</td>
+          </tr>
+          <tr>
+            <td>Average precision</td>
+            <td>{{ '%.4f'|format(pre.item.average_precision) }}</td>
+            <td>{{ '%.4f'|format(fine.item.average_precision) }}</td>
+          </tr>
+          <tr>
+            <td>Valid images</td>
+            <td>{{ pre.item.valid_images }}</td>
+            <td>{{ fine.item.valid_images }}</td>
+          </tr>
+          <tr>
+            <td>Pair comparisons</td>
+            <td>{{ '{:,}'.format(pre.item.pair_count) }}</td>
+            <td>{{ '{:,}'.format(fine.item.pair_count) }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout">
+      The pre-trained model performed better on this evaluation sample.
+      ROC-AUC and average precision are verification metrics, not classification
+      accuracy. Results are preliminary and should be interpreted with the
+      dataset split and near-duplicate audit limitations in mind.
+    </div>
+
+    
+<div class="content-grid verification-charts">
+  <div class="panel verification-chart-card">
+    <h3>ROC curve</h3>
+    <p>True positive rate versus false positive rate</p>
+    <img
+      src="{{ url_for('static', filename='results/pre_post_verification_roc.png') }}"
+      alt="ROC curve comparing pre-trained and fine-tuned FaceNet"
+      class="verification-chart-image">
+  </div>
+
+  <div class="panel verification-chart-card">
+    <h3>Precision-recall curve</h3>
+    <p>Precision versus recall for both models</p>
+    <img
+      src="{{ url_for('static', filename='results/pre_post_verification_pr.png') }}"
+      alt="Precision-recall curve comparing both FaceNet models"
+      class="verification-chart-image">
+  </div>
+</div>
+
+    {% else %}
+      <p>Saved comparison results are unavailable. Check the verification summary CSV.</p>
+    {% endif %}
+  </section>
+</section>
+
+
+    <section id="workflow" class="section-anchor">
+      <div class="section-heading"><div><div class="eyebrow">SECTION 04</div><h2>Workflow &amp; results</h2></div><span class="section-tag">Progress tracker</span></div>
+     
+<section class="panel workflow-panel">
+  <div class="workflow-step done">
+    <div class="step-number">1</div>
+    <div>
+      <h3>Dataset metadata loaded</h3>
+      <p>Dataset counts, identity labels, image quality, and split metadata loaded.</p>
+    </div>
+    <span class="pill success">Complete</span>
+  </div>
+
+  <div class="workflow-step current">
+    <div class="step-number">2</div>
+    <div>
+      <h3>Leakage and near-duplicate audit</h3>
+      <p>Exact duplicates were checked; potential near-duplicates and cross-quality leakage still require review.</p>
+    </div>
+    <span class="pill warning">Needs review</span>
+  </div>
+
+  <div class="workflow-step done">
+    <div class="step-number">3</div>
+    <div>
+      <h3>Pre-trained baseline evaluation</h3>
+      <p>Baseline embeddings, verification scores, ROC curve, and precision-recall analysis generated.</p>
+    </div>
+    <span class="pill success">Complete — preliminary</span>
+  </div>
+
+  <div class="workflow-step done">
+    <div class="step-number">4</div>
+    <div>
+      <h3>Fine-tuning on training subset</h3>
+      <p>Partial fine-tuning completed and model checkpoint saved. The measured verification metrics did not improve.</p>
+    </div>
+    <span class="pill success">Experiment completed</span>
+  </div>
+
+  <div class="workflow-step done">
+    <div class="step-number">5</div>
+    <div>
+      <h3>Model comparison and technical report</h3>
+      <p>Pre-trained and fine-tuned verification metrics, comparison graphs, and PDF report generated.</p>
+    </div>
+    <span class="pill success">Generated — review required</span>
+  </div>
+</section>
+</div>
+    </section>
+    {% endif %}
+    <footer>FaceAI · Face Recognition System <span>Built for local project evaluation</span></footer>
+  </main>
+</div>
+<script>
+const payload = {{ data|tojson }};
+const palette = ['#3b82f6','#22c55e','#8b5cf6','#f97316','#ec4899','#06b6d4','#fbbf24','#a78bfa','#14b8a6','#f43f5e'];
+Chart.defaults.color = '#9fb2cc';
+Chart.defaults.font.family = 'Inter, Segoe UI, Arial, sans-serif';
+Chart.defaults.borderColor = 'rgba(148,163,184,.12)';
+if (payload && payload.ready && window.Chart) {
+  new Chart(document.getElementById('identityChart'), {type:'bar', data:{labels:payload.identities.map(x=>x.name), datasets:[{data:payload.identities.map(x=>x.count), backgroundColor:payload.identities.map((_,i)=>palette[i%palette.length]), borderRadius:6, borderSkipped:false}]}, options:{responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}, scales:{x:{grid:{display:false}, ticks:{maxRotation:35,minRotation:0}}, y:{beginAtZero:true, ticks:{precision:0}}}}});
+  const qualityLabels = payload.quality.map(x=>x.name);
+  const qualityValues = payload.quality.map(x=>x.count);
+  new Chart(document.getElementById('qualityChart'), {type:'doughnut', data:{labels:qualityLabels,datasets:[{data:qualityValues,backgroundColor:['#3b82f6','#f97316','#64748b','#a78bfa'],borderWidth:0,hoverOffset:5}]}, options:{responsive:true,maintainAspectRatio:false,cutout:'72%',plugins:{legend:{display:false}}}});
+  document.getElementById('qualityLegend').innerHTML = payload.quality.map((x,i)=>`<div class="legend-item"><span class="legend-dot" style="background:${palette[i%palette.length]}"></span><span>${escapeHtml(x.name)}</span><b>${x.count.toLocaleString()}</b></div>`).join('');
+  new Chart(document.getElementById('splitChart'), {type:'doughnut', data:{labels:['Training','Evaluation'],datasets:[{data:[payload.train_count,payload.eval_count],backgroundColor:['#22c55e','#8b5cf6'],borderWidth:0,hoverOffset:5}]}, options:{responsive:true,maintainAspectRatio:false,cutout:'72%',plugins:{legend:{display:false}}}});
+}
+function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+const navLinks = document.querySelectorAll('.nav-link');
+navLinks.forEach(link => link.addEventListener('click', () => { navLinks.forEach(n=>n.classList.remove('active')); link.classList.add('active'); }));
+</script>
+</body>
+</html>

@@ -1,0 +1,27 @@
+# Face Recognition Model Comparison
+
+**Dataset:** JEZT-provided face dataset  
+**Evaluation subset:** 240 high-quality images, with up to 30 images per identity  
+**Detected faces:** 236  
+**Detection failures:** 4  
+**Device:** CPU
+
+| Metric | Pretrained pipeline | Fine-tuned pipeline |
+|---|---:|---:|
+| Accuracy on detected faces | 99.58% | 91.95% |
+| Detected faces | 236 | 236 |
+| Evaluation images | 240 | 240 |
+
+## Interpretation
+
+The pretrained FaceNet pipeline achieved higher classification accuracy than the partially fine-tuned pipeline on this evaluation sample. Fine-tuning updated the final embedding layers using 160 selected high-quality training faces, while a separate classifier was trained on 240 training embeddings.
+
+The results indicate that this fine-tuning configuration did not improve held-out classification performance. Further investigation is needed to determine whether this is due to limited training data, optimization choices, or generalization limitations.
+
+## Limitations
+
+- The evaluation uses a small, high-quality subset and does not establish performance on the complete dataset.
+- Low-quality images require separate evaluation because face detection fails frequently on them.
+- Cross-quality duplicate or related-frame leakage has not been completely ruled out.
+- Classification accuracy is not the same as verification performance. ROC-AUC, precision-recall, and same-person versus different-person similarity distributions should also be reported.
+- Results should be considered preliminary until the split audit and full evaluation are complete.

@@ -1,0 +1,66 @@
+
+FACE RECOGNITION MODEL COMPARISON
+================================
+
+Experiment: Pre-trained vs Partially Fine-tuned FaceNet
+Evaluation date: 28 October 2026
+Execution device: CPU
+
+EVALUATION SETUP
+----------------
+Evaluation images selected: 240
+Images with valid embeddings from both models: 236
+Images where face detection failed: 4
+Pair comparisons: 27,730
+Same-identity pairs: 3,364
+Different-identity pairs: 24,366
+
+VERIFICATION RESULTS
+--------------------
+Model                  ROC-AUC    Average Precision
+Pre-trained FaceNet    0.980838   0.958213
+Fine-tuned FaceNet     0.961675   0.900969
+
+OBSERVATION
+-----------
+The pre-trained FaceNet model achieved higher ROC-AUC and
+average precision than the partially fine-tuned model in
+this experiment.
+
+Fine-tuning did not improve verification performance on
+the selected high-quality evaluation subset.
+
+LIMITATIONS
+-----------
+1. Results use a limited, high-quality evaluation subset.
+2. Four evaluation images did not produce valid face embeddings.
+3. The candidate split has not been fully verified for
+   cross-quality near-duplicate leakage.
+4. Pair comparisons are not statistically independent because
+   multiple pairs share the same images.
+5. Results do not establish performance on low-quality images.
+6. The models use their own corresponding classifiers in the
+   separate identity-classification experiment. That experiment
+   is distinct from the verification experiment documented here.
+7. Results should be treated as preliminary, not as proof of
+   generalization to unseen people or real-world deployment.
+
+REPRODUCIBILITY
+---------------
+Verification script:
+src/compare_verification_models.py
+
+Pair scores:
+results/pre_post_verification_pair_scores.csv
+
+Summary:
+results/pre_post_verification_summary.csv
+
+Figures:
+results/pre_post_verification_roc.png
+results/pre_post_verification_pr.png
+results/pre_post_verification_similarity.png
+
+Evaluation images were not used for gradient training in
+this verification script. The integrity of the underlying
+split remains subject to the leakage limitations above.

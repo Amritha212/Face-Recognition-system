@@ -1,0 +1,3 @@
+model,valid_images,pair_count,same_identity_pairs,different_identity_pairs,roc_auc,average_precision
+pretrained,236,27730,3364,24366,0.9808379749447167,0.9582129210082111
+finetuned,236,27730,3364,24366,0.9616752544895261,0.9009693002480245
